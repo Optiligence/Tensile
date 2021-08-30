@@ -1463,7 +1463,7 @@ def TensileCreateLibrary():
   ##############################################################################
   # Parse config files
   ##############################################################################
-  solutions = []
+  solutions = set()
   logicData = {} # keys are problemTypes, values are schedules
 
   libraries = Common.ParallelMap(LibraryIO.parseLibraryLogicFile, logicFiles, "Reading logic files")
@@ -1492,9 +1492,9 @@ def TensileCreateLibrary():
     logicData[problemType].append((scheduleName, deviceNames, \
         solutionsForSchedule, indexOrder, exactLogic, rangeLogic ))
 
-    for solution in solutionsForSchedule:
-      if solution not in solutions:
-        solutions.append(solution)
+    solutions.update(solutionsForSchedule)
+
+  solutions = list(solutions) # only required until all consumer code can work with a set
 
   kernels, kernelHelperOjbs, _ = generateKernelObjectsFromSolutions(solutions)
 
